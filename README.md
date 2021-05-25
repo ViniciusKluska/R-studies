@@ -13,9 +13,12 @@ Thanks to all of those who gave me some kind of help to make it possible:
  -Felipe Araújo Kluska (Gave me the right words in the right time - thanks for giving myself the boosts on self confidence - without knowing you were doing it)
  -Beatriz Araújo Kluska (CEO on Happines and psichology in Vinícius Kluska enterprise).
 
-Beginning of - I don't know what i'm doing here 
+Beginning of - I don't know what i'm doing here
+
 Starting date: 24/05/2021
+
 Days workin on it: 2
+
 Version: 1.2 (Rules to update - every single change would be considered a new version --> chose how to number it)
 
 Abstract:
