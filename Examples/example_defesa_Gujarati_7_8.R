@@ -5,7 +5,6 @@
 # Open data base related to the example
 tdefesa<-read.table("C:/Users/klusk/Projects/R-studies/Examples/defesa_Gujarati_7_8.txt", header=TRUE, sep="")
 regDefesa=lm(Y~X2+X3+X4+X5, data=tdefesa)
-Regression<-summary(regDefesa)
 resregDefesa=regDefesa$residuals
 # Step 1
 
@@ -68,10 +67,31 @@ White_test=white_lm(regDefesa, interactions=FALSE, statonly=FALSE)
 White_test_crossed=white_lm(regDefesa, interactions=TRUE, statonly=FALSE)
 # Stat only -> only the statistcs
 
+# Step 7
+
+# Test T with robust variables
+# For it, we need both of these --> lmtest and sandwich
+# In case you don't have car -> install.packages('lmtest') and install.packages(sandwich) (use number 9 to Paraná's repository)
+
+library(lmtest)
+library(sandwich)
+T_robust=coeftest(regDefesa, vcov=vcovHC(regDefesa, type = 'HC0'))
+
+
+# ONLY IF NEED TO TEST REGRESSION MODEL WITHOUT ONE VARIABLE
+
+regDefesa_withoutX3=lm(Y~X2+X4+X5, data=tdefesa)
+gqtest_2=gqtest(regDefesa_withoutX3, order.by = ~X2, data = tdefesa, fraction = 4)
+resregDefesa_WithouX3=regDefesa_withoutX3$residuals
+library(ggplot2)
+GresRegD_WX3=ggplot(data = tdefesa, aes(y=resregDefesa_WithouX3, x=X2))+geom_point(col='blue')+geom_abline(slope=0)
+white_lm(regDefesa_withoutX3)
+white_lm(regDefesa_withoutX3, interactions = TRUE)
+T_robust_WithoutX3=coeftest(regDefesa_withoutX3, vcov=vcovHC(regDefesa_withoutX3, type = 'HC0'))
 #--------------------------------
 # Front end
 print(tdefesa)
-print(Regression)
+print(summary(regDefesa))
 print(resregDefesa)
 print(resregDefesaquad)
 print(summary(regpark))
@@ -84,3 +104,8 @@ print(gqtest)
 print(bpg)
 print(White_test)
 print(White_test_crossed)
+print(gqtest_2)
+print(summary(regDefesa_withoutX3))
+print(GresRegD_WX3)
+print(resregDefesa_WithouX3)
+print(T_robust)
