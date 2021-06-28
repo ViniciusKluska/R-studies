@@ -1,0 +1,107 @@
+---
+title: "Exercício semana 8"
+author: "Vinícius Araújo Kluska - GRR20183601"
+date: "26/06/2021"
+output: word_document
+---
+
+# 1) Regressão Múltipla com Mínimos Quadrados Ordinários (MQO)  
+
+Utilizando os dados da tabela "crime1.txt" extraída do Wooldridge e disponível no Moodle, estime a regressão de narr86 como variável dependente em função de pcnv, avgsen, ptime86, qemp86. A descrição das variáveis se encontra no arquivo texto "crime1.DES", também disponível no Moodle.
+
+* a) Apresente os resultados obtidos com o R incluindo comandos, estimativas, teste t, teste F e R quadrado e analise-os.  
+* b) Analise o teste t. Apresente a H0 e responda à questão: os coeficientes da regressão são significativos a 5%?  
+* c) Analise o teste F. Apresente a H0 e responda à questão: os coeficientes da regressão são significativos conjuntamente?   
+* d) Analise o R quadrado, respondendo à questão: quanto a regressão explica das variações da variável dependente?
+
+## Resolução:
+
+Open data base "Crime1"
+```{r Open data}
+tCrime<-read.delim2("C:/Users/klusk/Projects/R-studies/Econometrics_S308/Crime_1.txt")
+```
+Establish regression
+```{r Regression}
+regCrime=lm(narr86~pcnv+avgsen+ptime86+qemp86, data=tCrime)
+Regression<-summary(regCrime)
+print(Regression)
+```
+## Análise de resultados:
+* A)  A regressão é estimada da seguinte forma: 
+   + narr86 = 0,7067456 - (0,150832pcnv) + (0,007443avgsen) - (0,037391ptime86) -(0,103341qemp86)
+* B) Com relação aos betas, somente "avgsen" não reijeita H0 a 5% de significância pois é o único com p-valor superior a 0,05.
+* C) Sobre a regressão como um todo, o resultado do teste F demonstra que esta é significante a 5%.
+* D) Segundo o R², a regressão estimada explica 4,219% da variação, o que é considerado um baixo poder explicativo. O R² ajustado apresenta um ajuste de 4,079%.
+   
+# 2) Gráfico dos resíduos da regressão estimada  
+
+Desenhe o gráfico dos resíduos da regressão para observar sua dispersão (plotar a E(u) = 0 é recomendável para facilitar a observação). Observe o gráfico e analise se:  a) A variância do resíduo parece constante, ou seja, homocedástica;  b) Os resíduos parecem seguir a distribuição normal (simetria, por exemplo)      
+
+## Resolução:
+
+Plot Graph: Residuals
+```{r graphs residuals}
+resregCrime <- regCrime$residuals
+library(ggplot2)
+Gresavgsen<-ggplot(data = tCrime, aes(y=resregCrime, x = avgsen))+geom_point(col='Blue')+geom_abline(slope = 0)
+Grespcnv<-ggplot(data = tCrime, aes(y=resregCrime, x = pcnv))+geom_point(col='Blue')+geom_abline(slope = 0)
+Gresptime86<-ggplot(data = tCrime, aes(y=resregCrime, x = ptime86))+geom_point(col='Blue')+geom_abline(slope = 0)
+Gresqemp86<-ggplot(data = tCrime, aes(y=resregCrime, x = qemp86))+geom_point(col='Blue')+geom_abline(slope = 0)
+print(Gresavgsen)
+print(Grespcnv)
+print(Gresqemp86)
+print(Gresptime86)
+```
+
+## Análise de resultados:
+
+* O gráfico dos resíduos da regressão com relação a variável "avgsen" apresenta aparente heterocedasticidade e assimetria com relação a distribuição normal.
+* O gráfico dos resíduos da regressão com relação a variável "pcnv" apresenta aparente homocedasticidade e simetria para com relação a distribuição normal.
+* O gráfico dos resíduos da regressão com relação a variável "qemp86" apresenta aparente homocedasticidade e simetria para com relação a distribuição normal.
+* O gráfico dos resíduos da regressão com relação a variável "ptime86" apresenta aparente heterocedasticidade e assimetria com relação a distribuição normal.
+
+Para uma análise mais embasada um teste BPG para a avaliação indivídual dos parâmetros - H0: homocedasticidade e H1: heterocedasticidade
+
+# 3) Teste de White com e sem termos cruzados
+
+Aplique o teste de White à regressão  com e sem termos cruzados (é necessário o pacote "skedastic"). Apresente a H0 e analise se eles apontam ou não violação da hipótese de homocedasticidade.  
+
+## Resolução:
+
+Run White_test:
+```{r White test}
+library(skedastic)
+White_test=white_lm(regCrime, interactions=FALSE, statonly=FALSE)
+White_test_crossed=white_lm(regCrime, interactions=TRUE, statonly=FALSE)
+print(White_test)
+print(White_test_crossed)
+```
+## Análise de resultados:
+
+* A) H0: homocedasticidade / H1: heterocedasticidade.
+
+* B) Teste White sem interações:
+   + P-value > 5%, logo rejeitar H0.
+     Teste White com interações:
+   + P-value > 5%, logo rejeitar H0.
+   Resumo: Indício de heterocedasticidade.
+
+# 4) Teste t robusto
+
+Refaça os testes t utilizando a variância robusta de white (os pacotes lmtest e sandwich são necessários). Apresente a H0 e analise se o resultado do teste indica que os coeficientes são significativos a 5%.
+
+## Resolução:
+
+Run T_robust test
+```{r Robust T}
+library(lmtest)
+library(sandwich)
+T_robust=coeftest(regCrime, vcov=vcovHC(regCrime, type = 'HC0'))
+print(T_robust)
+```
+
+## Análise de resultados:
+
+* H0: O estimador é significante a 5% de significância / H1:  O estimador não é significante a 5% de significância.
+   + A variância de White é uma forma de conferir maior peso para as informações que apresentam menor variância (informações mais próximas a média populacional).
+* O teste mantem que avgsen é não significativo a 5%.
