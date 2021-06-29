@@ -7,6 +7,7 @@ git commit -am "" #"Drescription"
 git push
 
 git pull #Update local repository - In case of changing or using another PC.
+    * git pull is the most aggressive alternative: it will download the remote content to the local active branch and will run the git merge command immediately to create a merge commit for the new remote content.
 
 git clone "URL-repository" #Creat a repository inside the local directory.
 
@@ -17,6 +18,11 @@ git checkout branchname #switch to "branchname"
 git checkout -b branchname #Creat new branch
 
 git merge branchname #I need more knowledge abot that, serach for it (merge; rebase)
+
+git fetch <remote></branch> It will download the remote content, but will not update the working state of the local repository, leaving the current job intact.
+    *git fetch --all A powerful command that searches for all registered remotes and their ramifications
+    *git fetch --dry--run This option will run a demo of the command, resulting in examples of actions that will happen during the search but will not be applied. Afterall, why not to ask to git itself?
+    *git fetch origin This command displays the branches that have been downloaded
 
 git branch -D branchname #delete branch
 
