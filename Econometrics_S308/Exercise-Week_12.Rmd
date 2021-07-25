@@ -1,0 +1,100 @@
+---
+title: "Exercício semana 12"
+author: "Vinícius Araújo Kluska - GRR20183601"
+date: "25/07/2021"
+output: word_document
+---
+
+# Getting data related to the Exercise_Week_12
+
+Open data base "MEAP93"
+```{r Open data}
+T_MEAP93<-read.table("C:/Users/klusk/Projects/R-studies/Examples/MEAP93.txt", header= TRUE, sep="")
+```
+# Exercise_1 
+Utilizando a tabela MEAP93.txt, estime as regressões a seguir:
+    Reg1: math10 = B1 + B2enroll + B3sttaff + B4totcomp + u
+    Reg2: math10 = B1 + B2log(enroll) + B3log(sttaff) + B4log(totcomp) + u
+    Reg3: math10 = B1 + B2log(enroll) + B3log(sttaff) + B4log(totcomp) + B5lnchprg + u
+
+Analise os testes t e R2 ajustados obtidos. Qual das regressões apresenta melhores resultados? Por quê?
+
+# Exercise_2
+Baseado nos testes t de Reg3, exclua a(s) variável(is) que não seja(m) significativa(s). Estime a nova regressão, que chamaremos de Reg4.
+
+# Exercise_3
+Faça os testes de autocorrelação dos resíduos de Breuch-Godfrey e Durbin Watson em Reg1 e Reg4. Houve melhora na regressão? Por quê?
+
+# Exercise_4
+Aplique o teste de White com e sem termos cruzados na Reg1 e Reg4. O que você conclui a respeito da hipótese de homocedasticidade?
+
+# Exercise_5
+Utilize as variâncias robustas de White na Reg4. Quais seus efeitos sobre os testes t?
+
+## Resolução
+
+Open data base "MEAP93"
+
+1) Establish regressions
+```{r Regressions}
+reg1_MEAP93=lm(math10~enroll+staff+totcomp, data = T_MEAP93)
+reg2_MEAP93=lm(math10~log(enroll)+log(staff)+log(totcomp), data = T_MEAP93)
+reg3_MEAP93=lm(math10~log(enroll)+log(staff)+log(totcomp)+lnchprg, data = T_MEAP93)
+print(summary(reg1_MEAP93))
+print(summary(reg2_MEAP93))
+print(summary(reg3_MEAP93))
+```
+Análise: 
+    A primera (reg1_MEAP93), apresenta somente "totcomp" como significativa a 5% de significância e R Quadrado ajustado igual a 0,04704.
+    A segunda (reg2_MEAP93), apresenta o intercepto, "log(enroll)" e "log(totcomp)" significativos a 5% de significância e R Quadrado ajustado igual a 0,05844.  
+    A terceira (reg3_MEAP93), apresenta o intercepto, "log(enroll)", "log(totcomp)" e "lnchprg" significativos a 5% de significância e R Quadrado ajustado igual a 0.1908.
+    Portanto, concluísse pela preferência por "reg3_MEAP93", dado a maior quantidade de variáveis explicativas significativas a 5% e ao aumento de R Quadrado ajustado pela inclusão da última variável.
+
+2) 
+```{r reg3_MEAP93 without "log(staff)"}
+reg4_MEAP93=lm(math10~log(enroll)+log(totcomp)+lnchprg, data = T_MEAP93)
+print(summary(reg4_MEAP93))
+```
+
+3)
+```{r Breuch-Godfrey}
+library(lmtest)
+BGtest_1 <- bgtest(reg1_MEAP93)
+BGtest_4 <- bgtest(reg4_MEAP93)
+print(BGtest_1)
+print(BGtest_4)
+```
+Análise:
+    Sobre os testes de Breuch-Godfrey:
+        recusa-se H0 em "reg1_MEAP93", pois o P-valor é inferior a 5% (0.002095), denotando assim, possível presença de autocorrelação dos resíduos pois não é possível aceitar que os ros sejam iguais a 0.
+        recusa-se H1 em "reg4_MEAP93", pois o P-valor é superior a 5% (0.4435), denotando assim, a ausencia de autocorrelação dos resíduos pois é possível aceitar que os ros sejam iguais a 0.
+    Sobre os testes de Durbin Watson:
+        recusa-se H0 em "reg1_MEAP93", pois Dw calculado (1.6689) é inferior a Dl (1.821), denotando assim, possível presença de autocorrelação positiva.
+        recusa-se H1 em "reg4_MEAP93", pois Dw calculado (1.9091) é superior a Du (1.821) e inferior a 4-Du (2.179), denotando assim, a falta de evidências para existência de autocorrelação.
+Resultado: Dada a análise, é correto admitir melhora na regressão. Passou de um modelo com problemas relativos a autocorrelação, para um modelo melhor ajustado sem evidências de autocorrelação.
+
+4)
+```{r White test}
+library(skedastic)
+White_test_1=white_lm(reg1_MEAP93, interactions=FALSE, statonly=FALSE)
+White_test_crossed_1=white_lm(reg1_MEAP93, interactions=TRUE, statonly=FALSE)
+White_test_4=white_lm(reg4_MEAP93, interactions=FALSE, statonly=FALSE)
+White_test_crossed_4=white_lm(reg4_MEAP93, interactions=TRUE, statonly=FALSE)
+print(White_test_1)
+print(White_test_4)
+print(White_test_crossed_1)
+print(White_test_crossed_4)
+```
+Análise:
+Para todos os testes realizados, tanto para "reg1_MEAP93" e"reg4_MEAP93", há indícios de heterocedasticidade. Isto da-se pelo fato de que todos os p-valores encontrados são inferiores há 5%, caracterizando a recusa de H0: homocedasticidade.
+
+5)
+```{r Robust T}
+library(lmtest)
+library(sandwich)
+T_robust=coeftest(reg4_MEAP93, vcov=vcovHC(reg4_MEAP93, type = 'HC0'))
+print(T_robust)
+```
+Análise: 
+    O teste mantém o estabelecido pelo teste t: todos os parâmetros são significantes a 5%¨.
+    A variância de White é uma forma de conferir maior peso para as informações que apresentam menor variância (informações mais próximas a média populacional).
