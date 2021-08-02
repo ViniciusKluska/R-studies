@@ -1,0 +1,79 @@
+---
+title: "Exercício semana 13"
+author: "Vinícius Araújo Kluska - GRR20183601"
+date: "01/08/2021"
+output: word_document
+---
+
+# Getting data related to the Exercise_Week_13
+
+Open data base "tabela_9.7"
+```{r Open data}
+tabela_9.7<-read.table("C:/Users/klusk/Projects/R-studies/Examples/tabela_9.7.txt", header= TRUE, sep="")
+```
+# a)
+Utilizando a tabela tabela_9.7.txt, estime as regressões a seguir:
+    
+    rs=idade+dgen+de2+de3+de4+dpt+dgen*de3+dgen*de4+u
+
+# b)
+Verifique quais variáveis foram significativas. Explique como você chegou a essa conclusão.
+
+# c)
+Remova as variáveis que não foram significativas a 5% e estime novamente a regressão.
+
+# d)
+Verifique quais variáveis foram significativas nesta segunda regressão e analise a significância global dos parâmetros.
+
+# e)
+Utilize o teste Breusch Godfrey para AR (1) e AR (3) e interprete os resultados.
+
+# f)
+Utilize o teste de White com e sem termos cruzados e analise os resultados obtidos. 
+
+## Resolução
+
+Open data base "tabela_9.7"
+
+a) Establish regressions
+```{r Regressions}
+reg1_tabela_9.7=lm(rs~idade+dgen+de2+de3+de4+dpt+dgen*de3+dgen*de4, data = tabela_9.7)
+print(summary(reg1_tabela_9.7))
+```
+b) A "reg1_tabela_9.7", apresenta "idade", "dgen", "de4" como significativa a 5% de significância.
+    
+    Portanto, concluísse pela preferência destas para a composição da próxima regressão, dado que estas foram as únicas a serem aceitas pelo teste t.
+
+c) 
+```{r reg2_tabela_9.7}
+reg2_tabela_9.7=lm(rs~idade+dgen+de4, data = tabela_9.7)
+print(summary(reg2_tabela_9.7))
+```
+
+d) A "reg2_tabela_9.7", apresenta todas as variáveis explicativas como significativa a 5% de significância.
+   Também percebesse que sobre o resultado do teste F apresenta que os parâmetros são significativos a 5% de significância.
+   Portanto, concluísse que a regressão "continue" para os testes subsequêntes referentes a heterocedasticidade e autocorrelação. 
+
+e)
+```{r Breuch-Godfrey}
+library(lmtest)
+BGtest_2_1 <- bgtest(reg1_tabela_9.7, order = 1)
+BGtest_2_3 <- bgtest(reg2_tabela_9.7, order = 3)
+print(BGtest_2_1)
+print(BGtest_2_3)
+```
+Análise:
+    Sobre os testes de Breuch-Godfrey:
+        recusa-se H0 em "reg1_tabela_9.7", pois o P-valor é inferior a 5% (0.3167), denotando assim, possível presença de autocorrelação dos resíduos pois não é possível aceitar que os ros sejam iguais a 0.
+        recusa-se H1 em "reg4_tabela_9.7", pois o P-valor é superior a 5% (0.6916), denotando assim, a ausencia de autocorrelação dos resíduos pois é possível aceitar que os ros sejam iguais a 0.
+    
+4)
+```{r White test}
+library(skedastic)
+White_test_2=white_lm(reg2_tabela_9.7, interactions=FALSE, statonly=FALSE)
+White_test_crossed_2=white_lm(reg2_tabela_9.7, interactions=TRUE, statonly=FALSE)
+print(White_test_2)
+print(White_test_crossed_2)
+```
+Análise:
+Para todos os testes realizados, tanto para com ou sem termos cruzados, há indícios de heterocedasticidade. Isto da-se pelo fato de que todos os p-valores encontrados são inferiores há 5%, caracterizando a recusa de H0: homocedasticidade.
