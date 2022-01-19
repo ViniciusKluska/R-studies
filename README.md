@@ -1,5 +1,5 @@
 # R-studies
-This is an initiative from an ungraduated economics science student trying to get out of Excel.
+This is an initiative from an ungraduated economics science student to learn R and improve Excel.
 
 I'm trying to lear this new language before a graduate.
 
