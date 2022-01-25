@@ -7,7 +7,7 @@
 # Basic commands
     # Import data
 
-    dat <- read.csv("C:/Users/klusk/Projects/R-studies/HarvardX_PH525_1x/femaleMiceWeights.csv")
+    dat <- read.csv("C:/Users/klusk/Projects/R-studies/HarvardX_PH525_1x/Data_HarvardX/femaleMiceWeights.csv")
 print(dat)
 
     # Commands

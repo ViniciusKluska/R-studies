@@ -6,7 +6,7 @@
     url="https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv"
     filename <- basename(url)
     #download(url,filename)
-    dat <- read.csv("C:/Users/klusk/Projects/R-studies/HarvardX_PH525_1x/msleep_ggplot2.csv")
+    dat <- read.csv("C:/Users/klusk/Projects/R-studies/HarvardX_PH525_1x/Data_HarvardX/msleep_ggplot2.csv")
 
 print(dat)
 
