@@ -4,8 +4,8 @@
 
 # Get Data - Using downloader package - delete teh "#" to use the code :)
 
-    #install.packages("downloader")
-    #library(downloader) 
+    install.packages("downloader")
+    library(downloader) 
     #url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
     #filename <- "femaleMiceWeights.csv" 
     #download(url, destfile=filename)
@@ -13,7 +13,7 @@
 # Getting Started Exercises #1
     #Read in the file femaleMiceWeights.csv and report the exact name of the column containing the weights.
 
-    dat <- read.csv("R-studies/HarvardX_PH525_1x/femaleMiceWeights.csv")
+    dat <- read.csv("C:/Users/klusk/Projects/R-studies/HarvardX_PH525_1x/femaleMiceWeights.csv")
 
 print(dat)
 
