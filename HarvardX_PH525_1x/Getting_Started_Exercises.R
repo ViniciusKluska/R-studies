@@ -48,4 +48,7 @@ print(answer_5)
 # Getting Started Exercises #6
     # One of the functions we will be using often is sample(). Read the help file for sample() using ?sample. Now take a random sample of size 1 from the numbers 13 to 24 and report back the weight of the mouse represented by that row. Make sure to type set.seed(1) to ensure that everybody gets the same answer.
 
-    answer_6 <- sample(dat$Bodyweight,1, FALSE,)
+                set.seed(1)
+    answer_6 <- sample(13:24, size=1, replace=FALSE)
+
+print(answer_6)
